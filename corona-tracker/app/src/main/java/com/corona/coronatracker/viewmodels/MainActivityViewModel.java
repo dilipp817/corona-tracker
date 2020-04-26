@@ -5,10 +5,15 @@ import android.app.Application;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.corona.coronatracker.dummydata.DummyDataProvider;
+import com.corona.coronatracker.dummydata.DummyModel;
 import com.corona.coronatracker.repository.interfaces.CoronaRepo;
 import com.corona.coronatracker.repository.webservice.model.Response;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -23,6 +28,7 @@ public class MainActivityViewModel extends ViewModel {
     private CoronaRepo coronaRepo;
     public MutableLiveData<Response<JSONObject>> updateApiStatus = new MutableLiveData<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    public List<DummyModel> dummyModelList = new ArrayList<>();
 
     @Inject
     public MainActivityViewModel(Application application, CoronaRepo coronaRepo) {
@@ -32,6 +38,7 @@ public class MainActivityViewModel extends ViewModel {
 
 
     public void checkCoronaUpdate() {
+        dummyModelList = DummyDataProvider.prepareDummyModelData();     //this is dummy data to test viewpager
         updateApiStatus.postValue(Response.loading());
         Disposable disposable = coronaRepo.getCoronaDetails()
                 .subscribeOn(Schedulers.io())

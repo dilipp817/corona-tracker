@@ -10,6 +10,7 @@ import com.corona.coronatracker.dummydata.DummyModel;
 import com.corona.coronatracker.repository.interfaces.CoronaRepo;
 import com.corona.coronatracker.repository.webservice.model.Response;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class MainActivityViewModel extends ViewModel {
 
     private Application application;
     private CoronaRepo coronaRepo;
-    public MutableLiveData<Response<JSONObject>> updateApiStatus = new MutableLiveData<>();
+    public MutableLiveData<Response<JSONArray>> updateApiStatus = new MutableLiveData<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     public List<DummyModel> dummyModelList = new ArrayList<>();
 

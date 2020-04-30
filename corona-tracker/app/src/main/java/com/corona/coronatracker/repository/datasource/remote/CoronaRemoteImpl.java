@@ -2,6 +2,7 @@ package com.corona.coronatracker.repository.datasource.remote;
 
 import com.corona.coronatracker.repository.webservice.service.ServiceInterceptor;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import io.reactivex.Observable;
@@ -14,7 +15,7 @@ public class CoronaRemoteImpl implements CoronaRemote {
     }
 
     @Override
-    public Observable<JSONObject> getCoronaDetails() {
+    public Observable<JSONArray> getCoronaDetails() {
         return serviceInterceptor.getCoronaDetails();
     }
 }

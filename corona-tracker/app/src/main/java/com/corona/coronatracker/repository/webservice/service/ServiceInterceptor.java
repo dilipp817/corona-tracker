@@ -3,6 +3,7 @@ package com.corona.coronatracker.repository.webservice.service;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import io.reactivex.Observable;
@@ -16,8 +17,8 @@ public class ServiceInterceptor {
         this.context = context;
     }
 
-    public Observable<JSONObject> getCoronaDetails() {
+    public Observable<JSONArray> getCoronaDetails() {
         Log.d("aaaaaaaa", "fdfdf");
-        return apiService.getCoronaDetails().map(jsonElement -> new JSONObject(jsonElement.toString()));
+        return apiService.getCoronaDetails().map(jsonElement -> new JSONArray(jsonElement.toString()));
     }
 }

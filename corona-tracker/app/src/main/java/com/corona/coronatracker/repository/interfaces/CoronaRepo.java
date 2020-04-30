@@ -1,9 +1,9 @@
 package com.corona.coronatracker.repository.interfaces;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
 
 import io.reactivex.Observable;
 
 public interface CoronaRepo {
-    Observable<JSONObject> getCoronaDetails();
+    Observable<JSONArray> getCoronaDetails();
 }

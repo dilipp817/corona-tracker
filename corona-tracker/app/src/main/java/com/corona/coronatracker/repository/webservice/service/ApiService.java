@@ -6,7 +6,7 @@ import retrofit2.http.GET;
 
 public interface ApiService {
 
-    @GET("/data.json")
+    @GET("/v2/state_district_wise.json")
     Observable<JsonElement> getCoronaDetails();
 
 }

@@ -3,30 +3,33 @@ package com.corona.coronatracker.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.corona.coronatracker.R;
-import com.corona.coronatracker.dummydata.DummyModel;
+import com.corona.coronatracker.models.DistrictData;
 
 import java.util.List;
 
 public class CoronaCaseAdapter extends RecyclerView.Adapter<CoronaCaseAdapter.CoronaCaseViewHolder> {
 
-    private List<DummyModel> caseList;
+    private List<DistrictData> caseList;
 
     public class CoronaCaseViewHolder extends RecyclerView.ViewHolder {
-        public TextView place, caseCount;
+        public TextView place, caseCount, delta;
+        public ImageView deltaIndicator;
 
         public CoronaCaseViewHolder(View view) {
             super(view);
-            place = (TextView) view.findViewById(R.id.placeName);
-            caseCount = (TextView) view.findViewById(R.id.caseCount);
+            place = view.findViewById(R.id.placeName);
+            caseCount = view.findViewById(R.id.caseCount);
+            delta = view.findViewById(R.id.delta);
+            deltaIndicator = (ImageView) view.findViewById(R.id.ic_increase);
         }
     }
 
 
-    public CoronaCaseAdapter(List<DummyModel> caseList) {
+    public CoronaCaseAdapter(List<DistrictData> caseList) {
         this.caseList = caseList;
     }
 
@@ -40,9 +43,20 @@ public class CoronaCaseAdapter extends RecyclerView.Adapter<CoronaCaseAdapter.Co
 
     @Override
     public void onBindViewHolder(CoronaCaseViewHolder holder, int position) {
-        DummyModel caseModel = caseList.get(position);
-        holder.place.setText(caseModel.getTitle());
-        holder.caseCount.setText(caseModel.getGenre());
+        DistrictData districtData = caseList.get(position);
+        holder.place.setText(districtData.getDistrict());
+        holder.caseCount.setText(String.valueOf(districtData.getConfirmedCount()));
+
+        int deltaCount = districtData.getDeltaCounts().getConfirmedCountDelta();
+        if (deltaCount > 0) {
+            holder.delta.setText(String.valueOf(deltaCount));
+            holder.delta.setVisibility(View.VISIBLE);
+            holder.deltaIndicator.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.delta.setVisibility(View.INVISIBLE);
+            holder.deltaIndicator.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

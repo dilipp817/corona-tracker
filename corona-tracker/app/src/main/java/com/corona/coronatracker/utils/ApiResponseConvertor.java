@@ -33,9 +33,10 @@ public class ApiResponseConvertor {
 
     private static DistrictData getDistrictData(String state, String stateCode, JSONObject districtData) throws JSONException {
 
+        DistrictDataDelta deltaCases = getDistrictDataDelta(districtData.getJSONObject("delta"));
         return new DistrictData(state, stateCode, districtData.getString("district"), districtData.getInt("active"),
                 districtData.getInt("confirmed"), districtData.getInt("deceased"), districtData.getInt("recovered"),
-                getDistrictDataDelta(districtData.getJSONObject("delta")));
+                deltaCases.getConfirmedCountDelta(), deltaCases.getDeceasedCountDelta(), deltaCases.getRecoveredCountDelta());
     }
 
     private static DistrictDataDelta getDistrictDataDelta(JSONObject districtDelta) throws JSONException {

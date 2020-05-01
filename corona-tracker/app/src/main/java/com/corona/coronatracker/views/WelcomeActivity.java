@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.corona.coronatracker.R;
 
+import static com.corona.coronatracker.views.MainActivity.COUNTRY;
+
 public class WelcomeActivity extends AppCompatActivity {
 
     private ViewPager pager;
@@ -42,7 +44,7 @@ public class WelcomeActivity extends AppCompatActivity {
         else if (action == PrevNext.NEXT)
             if (currentItem != totalPages -1) pager.setCurrentItem(currentItem + 1);
             else {
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(MainActivity.getInstance(this, COUNTRY, null));
             }
     }
 

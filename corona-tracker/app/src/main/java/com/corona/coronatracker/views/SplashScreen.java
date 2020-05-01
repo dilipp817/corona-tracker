@@ -8,6 +8,8 @@ import android.os.Handler;
 
 import com.corona.coronatracker.R;
 
+import static com.corona.coronatracker.views.MainActivity.COUNTRY;
+
 public class SplashScreen extends AppCompatActivity {
 
     @Override
@@ -25,8 +27,7 @@ public class SplashScreen extends AppCompatActivity {
 
     private void startCounter() {
         new Handler().postDelayed(() -> {
-            Intent i = new Intent(SplashScreen.this, MainActivity.class);
-            startActivity(i);
+            startActivity(MainActivity.getInstance(this, COUNTRY, null));
 //            finish();
 
         }, 3*1000); // wait for 5 seconds

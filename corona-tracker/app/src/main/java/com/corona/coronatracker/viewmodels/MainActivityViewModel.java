@@ -54,6 +54,7 @@ public class MainActivityViewModel extends ViewModel {
                                 insertCoronaData(database, coronaUpdate);
                                 populateCoronaData(database, null);
                             });
+
             compositeDisposable.add(disposable);
         }
         else {

@@ -2,24 +2,18 @@ package com.corona.coronatracker.models;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
-
-import com.corona.coronatracker.database.Converters;
-
 import org.jetbrains.annotations.NotNull;
-
 import java.io.Serializable;
 
-@Entity (tableName = "district_corona_case")
+@Entity (tableName = "district_corona_case", primaryKeys = {"state","district"})
 public class DistrictData implements Serializable {
 
+    @NotNull
     @ColumnInfo(name = "state")
     private String State;
     @ColumnInfo(name = "state_code")
     private String stateCode;
     @NotNull
-    @PrimaryKey
     @ColumnInfo(name = "district")
     private String district;
     @ColumnInfo(name = "active_count")

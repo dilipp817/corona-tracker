@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
+
 import com.corona.coronatracker.R;
 import com.corona.coronatracker.adapters.CoronaCaseAdapter;
 import com.corona.coronatracker.database.AppExecutors;
@@ -31,6 +33,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     public static final String STATE = "state";
     private String STATE_CODE = null;
     private boolean isCountryWise = true;
+    private TextView totalConfirmed, totalActive, totalDeceased, totalRecovered;
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -53,25 +56,24 @@ public class MainActivity extends DaggerAppCompatActivity {
             STATE_CODE = bundle.getString(STATE);
         }
 
+        initiliseUi();
         setObservers();
         viewModel.checkCoronaUpdate(database, STATE_CODE);
     }
 
+    private void initiliseUi() {
+        totalConfirmed = findViewById(R.id.tv_totalConfirmed);
+        totalActive = findViewById(R.id.tv_totalActive);
+        totalDeceased = findViewById(R.id.tv_totalDied);
+        totalRecovered = findViewById(R.id.tv_totalRecovered);
+    }
+
     private void setObservers() {
-//        viewModel.updateApiStatus.observe(this, appUpdateResponse -> {
-//            switch (appUpdateResponse.status) {
-//                case ERROR:
-//                    appUpdateResponse.e.printStackTrace();
-//                    break;
-//                case SUCCESS:
-//                    AppExecutors.getInstance().diskIO().execute(() -> {
-//                        if (isCountryWise)
-//                            viewModel.insertAndPopulate(database, appUpdateResponse.data);
-//                    });
-//                    break;
-//            }
-//        });
         viewModel.districtData.observe(this, this::setUi);
+        viewModel.totalConfirmed.observe(this, confirmedCases -> totalConfirmed.setText(String.valueOf(confirmedCases)));
+        viewModel.totalActive.observe(this, activeCases -> totalActive.setText(String.valueOf(activeCases)));
+        viewModel.totalDeceased.observe(this, deceasedCases -> totalDeceased.setText(String.valueOf(deceasedCases)));
+        viewModel.totalRecovered.observe(this, recoveredCases -> totalRecovered.setText(String.valueOf(recoveredCases)));
     }
 
     private void setUi(List<DistrictData> coronaCaseList) {

@@ -5,10 +5,12 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import com.corona.coronatracker.R;
 import com.corona.coronatracker.adapters.CoronaCaseAdapter;
+import com.corona.coronatracker.database.AppExecutors;
+import com.corona.coronatracker.database.CoronaDatabase;
 import com.corona.coronatracker.di.scope.ViewModelFactory;
 import com.corona.coronatracker.models.DistrictData;
 import com.corona.coronatracker.utils.ApiResponseConvertor;
@@ -23,6 +25,12 @@ public class MainActivity extends DaggerAppCompatActivity {
     private MainActivityViewModel viewModel;
     private Context context;
     private CoronaCaseAdapter mAdapter;
+    CoronaDatabase database;
+    public static final String INTENT_CRETERIA = "criteria";
+    public static final String COUNTRY = "country";
+    public static final String STATE = "state";
+    private String STATE_CODE = null;
+    private boolean isCountryWise = true;
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -34,8 +42,36 @@ public class MainActivity extends DaggerAppCompatActivity {
 
         context = this;
         viewModel = new ViewModelProvider(this, viewModelFactory).get(MainActivityViewModel.class);
+        database = CoronaDatabase.getInstanse(this);
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle.getString(INTENT_CRETERIA).equals(COUNTRY)) {
+            isCountryWise = true;
+        }
+        else {
+            isCountryWise = false;
+            STATE_CODE = bundle.getString(STATE);
+        }
+
         setObservers();
-        viewModel.checkCoronaUpdate();
+        viewModel.checkCoronaUpdate(database, STATE_CODE);
+    }
+
+    private void setObservers() {
+//        viewModel.updateApiStatus.observe(this, appUpdateResponse -> {
+//            switch (appUpdateResponse.status) {
+//                case ERROR:
+//                    appUpdateResponse.e.printStackTrace();
+//                    break;
+//                case SUCCESS:
+//                    AppExecutors.getInstance().diskIO().execute(() -> {
+//                        if (isCountryWise)
+//                            viewModel.insertAndPopulate(database, appUpdateResponse.data);
+//                    });
+//                    break;
+//            }
+//        });
+        viewModel.districtData.observe(this, this::setUi);
     }
 
     private void setUi(List<DistrictData> coronaCaseList) {
@@ -48,21 +84,13 @@ public class MainActivity extends DaggerAppCompatActivity {
         mAdapter.notifyDataSetChanged();
     }
 
-    private void setObservers() {
-        viewModel.updateApiStatus.observe(this, appUpdateResponse -> {
-            switch (appUpdateResponse.status) {
-                case ERROR:
-                    appUpdateResponse.e.printStackTrace();
-                    Log.d("track", "error occored");
-                    break;
-                case SUCCESS:
-                    try {
-                        setUi(ApiResponseConvertor.extractCoronaData(appUpdateResponse.data));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-            }
-        });
+    public static Intent getInstance(Context context, String criteria, String stateCode) {
+        Intent intent = new Intent(context, MainActivity.class);
+        Bundle bundle = new Bundle();
+
+        bundle.putString(INTENT_CRETERIA, criteria);
+        bundle.putString(STATE, stateCode);
+        intent.putExtras(bundle);
+        return intent;
     }
 }

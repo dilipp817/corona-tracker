@@ -4,13 +4,19 @@ import android.app.Application;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.room.Database;
 
+import com.corona.coronatracker.database.AppExecutors;
+import com.corona.coronatracker.database.CoronaDatabase;
 import com.corona.coronatracker.dummydata.DummyDataProvider;
 import com.corona.coronatracker.dummydata.DummyModel;
+import com.corona.coronatracker.models.DistrictData;
 import com.corona.coronatracker.repository.interfaces.CoronaRepo;
 import com.corona.coronatracker.repository.webservice.model.Response;
+import com.corona.coronatracker.utils.ApiResponseConvertor;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -29,7 +35,7 @@ public class MainActivityViewModel extends ViewModel {
     private CoronaRepo coronaRepo;
     public MutableLiveData<Response<JSONArray>> updateApiStatus = new MutableLiveData<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    public List<DummyModel> dummyModelList = new ArrayList<>();
+    public MutableLiveData<List<DistrictData>> districtData = new MutableLiveData<>();
 
     @Inject
     public MainActivityViewModel(Application application, CoronaRepo coronaRepo) {
@@ -37,17 +43,38 @@ public class MainActivityViewModel extends ViewModel {
         this.coronaRepo = coronaRepo;
     }
 
+    public void checkCoronaUpdate(CoronaDatabase database, String stateCode) {
+        if (stateCode == null) {
+            updateApiStatus.postValue(Response.loading());
+            Disposable disposable = coronaRepo.getCoronaDetails()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            (coronaUpdate) -> {
+                                insertCoronaData(database, coronaUpdate);
+                                populateCoronaData(database, null);
+                            });
+            compositeDisposable.add(disposable);
+        }
+        else {
+            populateCoronaData(database, stateCode);
+        }
 
-    public void checkCoronaUpdate() {
-        dummyModelList = DummyDataProvider.prepareDummyModelData();     //this is dummy data to test viewpager
-        updateApiStatus.postValue(Response.loading());
-        Disposable disposable = coronaRepo.getCoronaDetails()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (appUpdate) -> updateApiStatus.postValue(Response.success(appUpdate)),
-                        (e) -> updateApiStatus.postValue(Response.error(e))
-                );
-        compositeDisposable.add(disposable);
+    }
+
+    public void insertCoronaData(CoronaDatabase database, JSONArray allCoronaData) {
+        AppExecutors.getInstance().diskIO().execute(() -> {
+            try {
+                database.districtDataDao().insertAllDistrictData(ApiResponseConvertor.extractCoronaData(allCoronaData));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void populateCoronaData(CoronaDatabase database, String stateCode) {
+        AppExecutors.getInstance().diskIO().execute(() -> {
+        districtData.postValue(database.districtDataDao().getAllDistrictData());
+        });
     }
 }

@@ -47,7 +47,7 @@ public class CoronaCaseAdapter extends RecyclerView.Adapter<CoronaCaseAdapter.Co
         holder.place.setText(districtData.getDistrict());
         holder.caseCount.setText(String.valueOf(districtData.getConfirmedCount()));
 
-        int deltaCount = districtData.getDeltaCounts().getConfirmedCountDelta();
+        int deltaCount = districtData.getConfirmedCountDelta();
         if (deltaCount > 0) {
             holder.delta.setText(String.valueOf(deltaCount));
             holder.delta.setVisibility(View.VISIBLE);

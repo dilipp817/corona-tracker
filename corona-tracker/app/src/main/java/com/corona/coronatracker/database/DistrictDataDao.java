@@ -14,9 +14,15 @@ public interface DistrictDataDao {
     @Query("Select * from district_corona_case")
     List<DistrictData> getAllDistrictData();
 
+    @Query("select * from district_corona_case where state = :stateName")
+    List<DistrictData> getAllStateData(String stateName);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAllDistrictData(List<DistrictData> districtData);
 
     @Query("Delete from district_corona_case")
     void deleteAllData();
+
+    @Query("select distinct state from district_corona_case order by state")
+    List<String> getStateList();
 }

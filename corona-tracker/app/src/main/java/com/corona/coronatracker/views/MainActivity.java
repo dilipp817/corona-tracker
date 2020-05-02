@@ -59,6 +59,7 @@ public class MainActivity extends DaggerAppCompatActivity {
         initiliseUi();
         setObservers();
         viewModel.checkCoronaUpdate(database, STATE_CODE);
+        viewModel.addStatesToList(database);
     }
 
     private void initiliseUi() {

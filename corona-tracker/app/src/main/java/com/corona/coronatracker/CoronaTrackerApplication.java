@@ -7,8 +7,6 @@ import android.content.Context;
 import androidx.fragment.app.Fragment;
 import androidx.multidex.MultiDex;
 
-//import com.corona.coronatracker.di.component.DaggerAppComponent;
-
 import com.corona.coronatracker.di.component.DaggerAppComponent;
 
 import javax.inject.Inject;

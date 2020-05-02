@@ -1,5 +1,6 @@
 package com.corona.coronatracker.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -25,4 +26,7 @@ public interface DistrictDataDao {
 
     @Query("select distinct state from district_corona_case order by state")
     List<String> getStateList();
+
+    @Query("select SUM(active_count) from district_corona_case where state = :stateName")
+    Integer getActiveCountFromState(String stateName);
 }

@@ -2,6 +2,7 @@ package com.corona.coronatracker.viewmodels;
 
 import android.app.Application;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -16,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,10 +38,14 @@ public class MainActivityViewModel extends ViewModel {
     public MutableLiveData<Integer> totalActive = new MutableLiveData<>();
     public MutableLiveData<Integer> totalDeceased = new MutableLiveData<>();
     public MutableLiveData<Integer> totalRecovered = new MutableLiveData<>();
-    public MutableLiveData<List<DistrictData>> mutableStateData = new MutableLiveData<>();
+    public HashMap<String, Integer> activeCountByState = new HashMap<>();
+    public MutableLiveData<HashMap<String, Integer>> activeCountByStateLD = new MutableLiveData<>();
 
     public List<DistrictData> stateData = new ArrayList<>();
     public MutableLiveData<List<String>> stateListLD = new MutableLiveData<>();
+
+    public List<DistrictData> list = new ArrayList<>();
+    public MutableLiveData<List<DistrictData>> listLD = new MutableLiveData<List<DistrictData>>();
 
     @Inject
     public MainActivityViewModel(Application application, CoronaRepo coronaRepo) {
@@ -105,16 +111,17 @@ public class MainActivityViewModel extends ViewModel {
         int totalActive = 0;
         int totalDeceased = 0;
         int totalRecovered = 0;
-        List<DistrictData> list = new ArrayList<>();
 
         AppExecutors.getInstance().diskIO().execute(() -> {
             list.addAll(database.districtDataDao().getAllStateData(stateName));
-
+            activeCountByState.put(stateName, database.districtDataDao().getActiveCountFromState(stateName));
+            listLD.postValue(list);
+            activeCountByStateLD.postValue(activeCountByState);
         });
 
         for (DistrictData districtData : list) {
             totalConfirmed = totalConfirmed + districtData.getConfirmedCount();
-            totalActive = totalActive + districtData.getActiveCount();
+            totalActive = activeCountByState.get(districtData.getState());
             totalDeceased = totalDeceased + districtData.getDeceasedCount();
             totalRecovered = totalRecovered + districtData.getRecoveredCount();
         }

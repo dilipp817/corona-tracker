@@ -57,9 +57,9 @@ public class MainActivity extends DaggerAppCompatActivity {
         }
 
         initiliseUi();
+        viewModel.getStateList(database);
         setObservers();
         viewModel.checkCoronaUpdate(database, STATE_CODE);
-        viewModel.addStatesToList(database);
     }
 
     private void initiliseUi() {
@@ -70,6 +70,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     }
 
     private void setObservers() {
+        viewModel.stateListLD.observe(this, stateNameList-> viewModel.addStatesToList(database, stateNameList));
         viewModel.districtData.observe(this, this::setUi);
         viewModel.totalConfirmed.observe(this, confirmedCases -> totalConfirmed.setText(String.valueOf(confirmedCases)));
         viewModel.totalActive.observe(this, activeCases -> totalActive.setText(String.valueOf(activeCases)));
